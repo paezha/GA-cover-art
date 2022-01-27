@@ -16,12 +16,12 @@ library(metR) # For contouring
 library(terra) # To work with rasters
 library(tidyverse) # Data carpentry and ggplot2
 ```
-19.1783° N, 98.6427° W
+
 Use {elevatr} to get elevation data:
 ```{r}
 
-izta <- get_elev_raster(locations = data.frame(x = c(-98.61, -98.665), 
-                                               y = c(19.13, 19.215)),
+hammer <- get_elev_raster(locations = data.frame(x = c(-79.6, -80.1), 
+                                               y = c(43.0, 43.5)),
                         z = 10, 
                         prj = "EPSG:4326",
                         clip = "locations")
@@ -29,43 +29,51 @@ izta <- get_elev_raster(locations = data.frame(x = c(-98.61, -98.665),
 
 Convert to {terra} `SpatRaster` object and thereof to data frame:
 ```{r}
-izta <- rast(izta)
+hammer <- rast(hammer)
 
-izta <- as.data.frame(izta, 
+hammer <- as.data.frame(hammer, 
                       xy = TRUE) %>%
   rename(elev = 3)
 ```
 
-Plot contours; use `Hiroshige` palette from [{MetBrewer}](https://github.com/BlakeRMills/MetBrewer):
+Plot contours; use `Atentado` palette from [{MexBrewer}](https://paezha.github.io/MexBrewer):
 ```{r}
-cols <- mex.brewer("Revolucion", n = 11)
+cols <- mex.brewer("Atentado", n = 11)
 
-ggplot(data = izta,
+ggplot(data = hammer,
        aes(x, y, z = elev)) +
-  geom_contour_filled(breaks = seq(min(izta$elev), 
-                                   max(izta$elev), 
+  geom_contour_filled(breaks = seq(min(hammer$elev), 
+                                   max(hammer$elev), 
                                    length.out = 11)) +
   #geom_contour_tanaka() + 
   scale_fill_manual(values = cols) +
-  coord_equal()
+  coord_equal() +
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave("hammer-contours.png",
+       width = 7,
+       height = 7,
+       units = "in")
+
 ```
 
 Repeat plot but now with Tanaka countours:
 ```{r}
-ggplot(data = izta,
+ggplot(data = hammer,
        aes(x, y, z = elev)) +
-  geom_contour_filled(breaks = seq(min(izta$elev), 
-                                   max(izta$elev), 
+  geom_contour_filled(breaks = seq(min(hammer$elev), 
+                                   max(hammer$elev), 
                                    length.out = 11)) +
-  geom_contour_tanaka(sun.angle = 260, 
+  geom_contour_tanaka(sun.angle = 60, 
                       smooth = 10) + 
   scale_fill_manual(values = cols) +
   coord_equal() + 
   theme_void() + 
   theme(legend.position = "none")
 
-ggsave("izta-tanaka-contours.png",
-       width = 4,
+ggsave("hammer-tanaka-contours.png",
+       width = 7,
        height = 7,
        units = "in")
 ```
