@@ -11,17 +11,17 @@ An update would be colorful, but still make references to geographically relevan
 I will use the following packages:
 ```{r message=FALSE}
 library(elevatr) # To get elevation data
-library(MetBrewer) # Color palettes
+library(MexBrewer) # Color palettes
 library(metR) # For contouring 
 library(terra) # To work with rasters
 library(tidyverse) # Data carpentry and ggplot2
 ```
-
+19.1783° N, 98.6427° W
 Use {elevatr} to get elevation data:
 ```{r}
 
-fuji <- get_elev_raster(locations = data.frame(x = c(138.7, 138.8), 
-                                               y = c(35.25, 35.4)),
+izta <- get_elev_raster(locations = data.frame(x = c(-98.61, -98.665), 
+                                               y = c(19.13, 19.215)),
                         z = 10, 
                         prj = "EPSG:4326",
                         clip = "locations")
@@ -29,20 +29,22 @@ fuji <- get_elev_raster(locations = data.frame(x = c(138.7, 138.8),
 
 Convert to {terra} `SpatRaster` object and thereof to data frame:
 ```{r}
-fuji <- rast(fuji)
+izta <- rast(izta)
 
-fuji <- as.data.frame(fuji, 
+izta <- as.data.frame(izta, 
                       xy = TRUE) %>%
   rename(elev = 3)
 ```
 
 Plot contours; use `Hiroshige` palette from [{MetBrewer}](https://github.com/BlakeRMills/MetBrewer):
 ```{r}
-cols <- met.brewer("Hiroshige", n = 11)
+cols <- mex.brewer("Revolucion", n = 11)
 
-ggplot(data = fuji,
+ggplot(data = izta,
        aes(x, y, z = elev)) +
-  geom_contour_filled(breaks = seq(600, 3900, 300)) +
+  geom_contour_filled(breaks = seq(min(izta$elev), 
+                                   max(izta$elev), 
+                                   length.out = 11)) +
   #geom_contour_tanaka() + 
   scale_fill_manual(values = cols) +
   coord_equal()
@@ -50,11 +52,11 @@ ggplot(data = fuji,
 
 Repeat plot but now with Tanaka countours:
 ```{r}
-ggplot(data = fuji,
+ggplot(data = izta,
        aes(x, y, z = elev)) +
-  geom_contour_filled(breaks = seq(600, 
-                                   3900, 
-                                   300)) +
+  geom_contour_filled(breaks = seq(min(izta$elev), 
+                                   max(izta$elev), 
+                                   length.out = 11)) +
   geom_contour_tanaka(sun.angle = 260, 
                       smooth = 10) + 
   scale_fill_manual(values = cols) +
@@ -62,7 +64,7 @@ ggplot(data = fuji,
   theme_void() + 
   theme(legend.position = "none")
 
-ggsave("fuji-tanaka-contours.png",
+ggsave("itza-tanaka-contours.png",
        width = 4,
        height = 7,
        units = "in")
