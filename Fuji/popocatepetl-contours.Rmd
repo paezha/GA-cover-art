@@ -13,15 +13,26 @@ I will use the following packages:
 library(elevatr) # To get elevation data
 library(MexBrewer) # Color palettes
 library(metR) # For contouring 
+library(showtext) # For importing fonts
 library(terra) # To work with rasters
 library(tidyverse) # Data carpentry and ggplot2
 ```
 
+## Load fonts
+
+Import Google Fonts
+```{r}
+font_add_google("Amatic SC", "pressstart")
+
+showtext_auto()
+```
+
+
 Use {elevatr} to get elevation data:
 ```{r}
 
-izta <- get_elev_raster(locations = data.frame(x = c(-98.61, -98.665), 
-                                               y = c(19.13, 19.215)),
+popo <- get_elev_raster(locations = data.frame(x = c(-98.575, -98.685), 
+                                               y = c(18.935, 19.105)),
                         z = 10, 
                         prj = "EPSG:4326",
                         clip = "locations")
@@ -29,21 +40,21 @@ izta <- get_elev_raster(locations = data.frame(x = c(-98.61, -98.665),
 
 Convert to {terra} `SpatRaster` object and thereof to data frame:
 ```{r}
-izta <- rast(izta)
+popo <- rast(popo)
 
-izta <- as.data.frame(izta, 
+popo <- as.data.frame(popo, 
                       xy = TRUE) %>%
   rename(elev = 3)
 ```
 
-Plot contours; use `Hiroshige` palette from [{MetBrewer}](https://github.com/BlakeRMills/MetBrewer):
+Plot contours; use `Revolucion` palette from [{MetBrewer}](https://github.com/BlakeRMills/MetBrewer):
 ```{r}
 cols <- mex.brewer("Revolucion", n = 11)
 
-ggplot(data = izta,
+ggplot(data = popo,
        aes(x, y, z = elev)) +
-  geom_contour_filled(breaks = seq(min(izta$elev), 
-                                   max(izta$elev), 
+  geom_contour_filled(breaks = seq(min(popo$elev), 
+                                   max(popo$elev), 
                                    length.out = 11)) +
   #geom_contour_tanaka() + 
   scale_fill_manual(values = cols) +
@@ -52,15 +63,15 @@ ggplot(data = izta,
 
 Repeat plot but now with Tanaka countours:
 ```{r}
-ggplot(data = izta,
+ggplot(data = popo,
        aes(x, y, z = elev)) +
-  geom_contour_filled(breaks = seq(min(izta$elev), 
-                                   max(izta$elev), 
+  geom_contour_filled(breaks = seq(min(popo$elev), 
+                                   max(popo$elev), 
                                    length.out = 11)) +
   geom_contour_tanaka(sun.angle = 60, 
                       smooth = 10) + 
   scale_fill_manual(values = cols) +
-  ggtitle("IZTACCIHUATL") +
+  ggtitle("POPOCATEPETL") +
   labs(subtitle = "México", caption = "@paezha") +
   coord_equal() +
   theme_void() + 
@@ -68,21 +79,27 @@ ggplot(data = izta,
         plot.background = element_rect(color = NA,
                                        fill = cols[6]),
         plot.title = element_text(face = "bold",
-                                  size = 33, 
+                                  size = 100, 
                                   hjust = 0.5,
                                   vjust = -6),
         plot.subtitle = element_text(color = "black",
-                                     size = 27, 
+                                     size = 80, 
                                   hjust = 0.5,
-                                  vjust = -141),
-        plot.caption = element_text(size = 12,
+                                  vjust = -147),
+        plot.caption = element_text(size = 40,
                                     hjust = 0.9,
-                                  vjust = 16))
+                                  vjust = 15))
   
 
-ggsave("izta-tanaka-contours.png",
+ggsave("popo-tanaka-contours.png",
        width = 8,
        height = 12,
        units = "in")
 ```
 
+  geom_text(aes(x = -98.675, y = 19.10),
+            label = ,
+            size = )
+
+    subtitle = "México",
+    caption = "@paezha"
