@@ -54,8 +54,8 @@ ggplot(data = fuji,
   geom_contour_filled(breaks = seq(600, 
                                    3900, 
                                    300)) +
-  geom_contour_tanaka(sun.angle = 260, 
-                      smooth = 10) + 
+  geom_contour_tanaka(sun.angle = 60, 
+                      smooth = 10) +  
   scale_fill_manual(values = cols) +
   coord_equal() + 
   theme_void() + 
